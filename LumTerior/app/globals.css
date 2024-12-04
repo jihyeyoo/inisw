@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 폰트 */
+@font-face {
+    font-family: "LINESeedKR-Th";
+    src: url("/fonts/LINESeedKR-Th.otf");
+  }
+
+@font-face {
+    font-family: "Pretendard-Medium";
+    src: url("/fonts/Pretendard-Medium.otf"); 
+}
+
+@font-face {
+  font-family: "Pretendard-Bold";
+  src: url("/fonts/Pretendard-Bold.otf");
+}
+
+@font-face {
+  font-family: "Pretendard-Light";
+  src: url("/fonts/Pretendard-Light.otf");
+}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "LINESeedKR-Th";
+    background-color: black;
+    animation: fadeIn 2s;
+  }
+  
+  /* 페이드인 애니메이션 */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* 텍스트 빛나는 애니메이션 */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px rgb(236, 215, 127), 0 0 10px rgb(236, 215, 127), 0 0 15px rgb(236, 215, 127), 0 0 20px rgb(236, 215, 127), 0 0 25px rgb(236, 215, 127), 0 0 30px rgb(236, 215, 127), 0 0 35px rgb(236, 215, 127);
+    color: #fff;
+  }
+  50% {
+    text-shadow: 0 0 10px #ffffff, 0 0 20px #ffd700, 0 0 30px rgb(236, 215, 127), 0 0 40px rgb(236, 215, 127), 0 0 50px rgb(236, 215, 127), 0 0 60px rgb(236, 215, 127), 0 0 70px rgb(236, 215, 127);
+    color: rgb(236, 215, 127);
+  }
+  100% {
+    text-shadow: 0 0 5px #ffffff, 0 0 10px rgb(236, 215, 127), 0 0 15px rgb(236, 215, 127), 0 0 20px rgb(236, 215, 127), 0 0 25px rgb(236, 215, 127), 0 0 30px rgb(236, 215, 127), 0 0 35px rgb(236, 215, 127);
+    color: #fff;
+  }
+}
+ 
+  /* 이미지와 버튼, 텍스트 래핑 */
+  #wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* 전구 이미지 */
+  img {
+    width: 300px;
+    height: auto;
+  }
+
+  a {
+    top: 26.2%;
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    padding-top: 60px;
+  }
+  
+.glowing-text {
+  font-size: 25px;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  animation: glow 1.5s infinite alternate;
+  position: relative;
+}
+
+h1 {
+  position: relative;
+  bottom: 100px;
+  color: rgb(236, 215, 127);
+  font-size: 25px;
+}
+
+  .navbar-title {
+    font-family: "Pretendard-Medium", sans-serif;
+    color: rgb(236, 215, 127);
+    text-align: center;
+    font-size: 40px;
+  }
+
+  #wrapper {
+    width: 80%;
+    max-width: 600px;
+    height: 110px; /* 높이 조정 */
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.5rem;
+  }
+
+
+  
+  
