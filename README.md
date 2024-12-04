@@ -11,4 +11,14 @@
 
 📄[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
 
+## Tech Stacks
 
+
+<div align="center">
+	<img src="https://img.shields.io/badge/HTML-E34F26?style=flat" height=40px/>
+	<img src="https://img.shields.io/badge/Python-4371A1?style=flat" height=40px/>
+	<img src="https://img.shields.io/badge/CSS-523F78?style=flat" height=40px/>
+	<img src="https://img.shields.io/badge/JavaScript-EFE070?style=flate" height=40px/>
+</div>
+
+## File Structure
