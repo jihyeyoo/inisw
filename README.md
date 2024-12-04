@@ -1,5 +1,5 @@
 # 고려대학교 지능정보 SW 아카데미 5기 2조
-![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=300&section=header&text=LumTerior&fontSize=90&fontColor=ECD77F&animation=fadeIn&fontAlignY=38&desc=Decorate%20GitHub%20Profile%20or%20any%20Repo%20like%20me!&descAlignY=51&descAlign=62)
+![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=300&section=header&text=LumTerior&fontSize=90&fontColor=ECD77F&animation=fadeIn&fontAlignY=38&desc=조명이%20바뀌면%20가치도%20바뀝니다.&descAlignY=51&descAlign=62)
 
 ## Members
 
