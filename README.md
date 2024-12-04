@@ -1,9 +1,8 @@
 # 고려대학교 SW 지능정보 아카데미 2조
 
-✨ Lumterior
+✨ <span style="color: blue;">Lumterior</span>
 
 ## Members
-
 
 | 안지홍✨ | 유지혜✨ | 이승재✨ |
 |---|---|---|
@@ -12,4 +11,5 @@
 ## Resource
 
 📄[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
+
 
