@@ -1,6 +1,6 @@
 # 고려대학교 SW 지능정보 아카데미 2조
 
-![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=280&section=header&text=LumTerior&fontColor=ECD77F&fontSize=60&animation=fadeIn)
+![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=260&section=header&text=LumTerior&fontColor=ECD77F&fontSize=60&animation=blink)
 
 ## Members
 
