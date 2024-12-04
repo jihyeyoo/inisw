@@ -1,6 +1,6 @@
 # 고려대학교 SW 지능정보 아카데미 2조
 
-✨ <span style="color: blue;">Lumterior</span>
+# Lumterior✨ 
 
 ## Members
 
