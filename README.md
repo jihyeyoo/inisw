@@ -1,7 +1,5 @@
 # 고려대학교 지능정보 SW 아카데미 5기 2조
-
 ![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=260&section=header&text=LumTerior&fontColor=ECD77F&fontSize=60&animation=blink&textPosition=10%)
-
 ## Members
 
 | 안지홍✨ | 유지혜✨ | 이승재✨ |
