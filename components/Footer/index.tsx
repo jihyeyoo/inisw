@@ -4,9 +4,9 @@ const Footer = () => (
       {/* Footer 텍스트 */}
       <div className="text-center sm:text-left sm:ml-3 flex flex-col">
         {/* 윗줄 텍스트 */}
-        <span className="text-lg font-bold">고려대학교 SW 지능정보 아카데미 2조</span>
+        <span className="font-custom text-lg">고려대학교 SW 지능정보 아카데미 2조</span>
         {/* 아랫줄 텍스트 */}
-        <span className="text-sm mt-2 font-medium">
+        <span className="font-second text-sm mt-2 font-medium">
           안지홍, 유지혜, 이승재, 이정현, 하동우, 홍규린
         </span>
       </div>

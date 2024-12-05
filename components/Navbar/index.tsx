@@ -13,7 +13,9 @@ const Navbar = ({ backgroundColor }: NavbarProps) => {
             }}
         >
             <Link href="/">
-                LumTerior
+            <span className="font-custom text-[40px] text-[#ECD77F] font-bold">
+                    LumTerior
+                </span>
             </Link>
         </nav>
     );
