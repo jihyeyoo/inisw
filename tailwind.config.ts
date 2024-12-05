@@ -32,6 +32,11 @@ export default ({
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        custom: ['Title', 'sans-serif'], 
+        second: ['Light', 'sans-serif'], 
+        third: ['LINESeedKR-Bd', 'monospace'], 
+    },
     },
   },
   plugins: [],

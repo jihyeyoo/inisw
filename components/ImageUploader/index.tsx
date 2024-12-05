@@ -94,7 +94,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
           htmlFor="fileInput"
           className="cursor-pointer flex flex-col justify-center items-center text-center"
         >
-          <span className="font-bold text-gray-700 text-sm">
+          <span className="font-custom text-gray-700 text-[17px]">
             인테리어 이미지를 업로드하세요.
           </span>
           <img
