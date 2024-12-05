@@ -2,11 +2,10 @@
 import { useState } from "react";
 
 interface ImageUploaderProps {
-  onImageUpload?: (imageInfo: { name: string, url: string }) => void;
+  onImageUpload: (imageInfo: { name: string, url: string }) => void;
 }
 
 const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
-  const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFile = async (file: File) => {
@@ -29,9 +28,6 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
       const result = await response.json();
 
       if (response.ok) {
-        // 미리보기 설정
-        setPreview(result.image.url);
-
         // 부모 컴포넌트에 이미지 정보 전달 (선택적)
         if (onImageUpload) {
           onImageUpload({
@@ -39,6 +35,9 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
             url: result.image.url
           });
         }
+        
+        // NewPage로 이동 (컴포넌트라서 라우터 사용 불가능해서 이런 식으로 구성)
+        window.location.href = "/newpage";
       } else {
         alert(result.error || '업로드 중 오류가 발생했습니다.');
       }
@@ -81,9 +80,8 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-100 rounded-lg p-5 cursor-pointer ${
-          isDragging ? "border-2 border-dashed border-black" : "border-2 border-dashed border-gray-400"
-        }`}
+        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-100 rounded-lg p-5 cursor-pointer ${isDragging ? "border-2 border-dashed border-black" : "border-2 border-dashed border-gray-400"
+          }`}
       >
         <input
           type="file"
@@ -108,7 +106,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
       </div>
 
       {/* 이미지 미리보기 */}
-      {preview && (
+      {/* {preview && (
         <div className="absolute top-4 left-4 w-[100px] h-[100px]">
           <img
             src={preview}
@@ -116,7 +114,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
             className="w-full h-full object-cover rounded-md"
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
