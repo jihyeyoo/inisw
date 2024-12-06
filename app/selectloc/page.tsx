@@ -79,7 +79,7 @@ const SelectLocPage = () => {
                     </button>
                 </div>
             </div>
-            <Footer className="w-full bg-black text-white p-4 text-center" />
+            <Footer/>
         </div>
     );
 };

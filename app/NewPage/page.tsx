@@ -79,9 +79,7 @@ const NewPage = () => {
                     <p className="text-white">이미지가 없습니다. 업로드를 시도해주세요.</p>
                 )}
             </div>
-
-            {/* Footer */}
-            <Footer className="w-full bg-black text-white p-4 text-center" />
+            <Footer/>
         </div>
     );
 };

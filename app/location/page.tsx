@@ -59,9 +59,7 @@ const LocationPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Footer */}
-            <Footer className="w-full bg-black text-white p-4 text-center" />
+            <Footer/>
         </div>
     );
 };

@@ -1,10 +1,15 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { useRouter } from "next/navigation";
 
 const ApplyBrightPage = () => {
   const [brightness, setBrightness] = useState(1.0); // 기본 밝기 값
   const [colorTemp, setColorTemp] = useState(0); // 기본 색온도 값
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const router = useRouter(); // Next.js 라우터
 
   // 이미지 경로
   const imageAPath = "/images/interior1.png"; // 조명 적용된 인테리어 이미지
@@ -101,48 +106,71 @@ const ApplyBrightPage = () => {
     setColorTemp(parseInt(e.target.value, 10));
   };
 
+  const handleViewRecommendation = () => {
+    router.push("/selectloc"); // selectloc 페이지로 이동
+  };
+
   return (
-    <div className="bg-black min-h-screen flex flex-col items-center justify-center text-white">
-      <h1 className="text-2xl font-bold mb-6">Apply Brightness and Color Temperature</h1>
-
-      {/* 캔버스 */}
-      <div className="bg-white p-5 rounded-lg shadow-md">
-        <canvas ref={canvasRef} className="rounded-md" />
+    <div className="bg-black flex flex-col min-h-screen">
+      {/* Navbar */}
+      <div className="flex justify-center">
+        <Navbar backgroundColor="rgb(0, 0, 0)" />
       </div>
 
-      {/* 슬라이더 */}
-      <div className="mt-10 bg-gray-800 p-5 rounded-lg w-3/4 lg:w-1/2">
-        <div className="mb-5">
-          <label htmlFor="brightness" className="block text-lg font-semibold mb-2">
-            Brightness: {brightness.toFixed(1)}
-          </label>
-          <input
-            id="brightness"
-            type="range"
-            min="1.0"
-            max="2.0"
-            step="0.1"
-            value={brightness}
-            onChange={handleBrightnessChange}
-            className="w-full"
-          />
+      <div className="bg-black min-h-screen flex flex-col items-center justify-center text-white">
+        {/* 캔버스 */}
+        <div className="bg-white p-5 rounded-lg shadow-md mt-10">
+          <canvas ref={canvasRef} className="rounded-md" />
+          <p className="mt-3 text-gray-800 font-custom text-center">
+            밝기와 색온도를 조절해보세요.
+          </p>
         </div>
-        <div>
-          <label htmlFor="colorTemp" className="block text-lg font-semibold mb-2">
-            Color Temperature: {colorTemp}
-          </label>
-          <input
-            id="colorTemp"
-            type="range"
-            min="-50"
-            max="50"
-            step="1"
-            value={colorTemp}
-            onChange={handleColorTempChange}
-            className="w-full"
-          />
+
+        {/* 슬라이더 */}
+        <div className="mt-10 bg-gray-800 p-5 rounded-lg w-3/4 lg:w-1/2">
+          <div className="mb-5">
+            <label htmlFor="brightness" className="block text-lg font-custom mb-2">
+              밝기: {brightness.toFixed(1)}
+            </label>
+            <input
+              id="brightness"
+              type="range"
+              min="1.0"
+              max="2.0"
+              step="0.1"
+              value={brightness}
+              onChange={handleBrightnessChange}
+              className="w-full accent-[#ECD77F]"
+            />
+          </div>
+          <div>
+            <label htmlFor="colorTemp" className="block text-lg font-custom mb-2">
+              색온도: {colorTemp}
+            </label>
+            <input
+              id="colorTemp"
+              type="range"
+              min="-50"
+              max="50"
+              step="1"
+              value={colorTemp}
+              onChange={handleColorTempChange}
+              className="w-full accent-[#ECD77F]"
+            />
+          </div>
+
+         
         </div>
+         {/* 추천 위치 보기 버튼 */}
+         <button
+            onClick={handleViewRecommendation}
+            className="group mt-5 mb-10 bg-gray-700 px-5 py-2 rounded-lg hover:bg-[#ECD77F]"
+          >
+            <p className="text-white font-second group-hover:text-black">다른 조명 적용하기</p>
+          </button>
       </div>
+
+      <Footer/>
     </div>
   );
 };
