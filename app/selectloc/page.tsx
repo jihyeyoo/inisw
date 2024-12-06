@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // useRouter 추가
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -12,6 +13,8 @@ const SelectLocPage = () => {
     const [currentLightIndex, setCurrentLightIndex] = useState(0);
     const currentLight = lights[currentLightIndex];
 
+    const router = useRouter(); // Next.js 라우터
+
     const handleNextLight = () => {
         setCurrentLightIndex((prevIndex) => (prevIndex + 1) % lights.length);
     };
@@ -23,7 +26,7 @@ const SelectLocPage = () => {
     };
 
     const handleApplyBright = () => {
-        alert("조명이 적용되었습니다!");
+        router.push("/applybright"); // applybright 페이지로 이동
     };
 
     return (
@@ -76,9 +79,7 @@ const SelectLocPage = () => {
                     </button>
                 </div>
             </div>
-
-            {/* Footer */}
-            <Footer className="w-full bg-black text-white p-4 text-center" />
+            <Footer/>
         </div>
     );
 };

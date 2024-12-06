@@ -80,7 +80,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-200 rounded-lg p-5 cursor-pointer ${isDragging ? "border-2 border-black" : "border-2 border-gray-400"
+        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-800  rounded-lg p-5 cursor-pointer ${isDragging ? "border-2 border-black" : "border-2 border-gray-400"
           }`}
       >
         <input
@@ -94,13 +94,13 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
           htmlFor="fileInput"
           className="cursor-pointer flex flex-col justify-center items-center text-center"
         >
-          <span className="font-custom text-gray-700 text-[17px]">
+          <span className="font-second text-white text-[17px]">
             인테리어 이미지를 업로드하세요.
           </span>
           <img
             src="/images/upload.png"
             alt="업로드 아이콘"
-            className="w-[55px] h-[48px] mt-2"
+            className="w-[48px] h-[48px] mt-2"
           />
         </label>
       </div>
