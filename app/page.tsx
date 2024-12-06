@@ -14,7 +14,7 @@ const Home = () => {
           className="w-[350px] sm:w-[400px] md:w-[450px] lg:w-[475px] xl:w-[500px] h-auto"
           src="/images/bulb.jpg" alt="전구 이미지"
         />
-        <span className="font-second text-gray-700 text-[27px] animate-[glow_1.5s_infinite_alternate]">
+        <span className="font-second text-gray-700 text-[27px] animate-[glow_1.2s_infinite_alternate]">
         조명이 바뀌면 가치도 바뀝니다.
           </span>
         </div>
