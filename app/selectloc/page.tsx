@@ -1,49 +1,29 @@
 "use client";
-import Footer from "@/components/Footer";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import Footer from "@/components/Footer";
 
-interface Image {
-    image_name: string;
-    s3_url: string;
-    uploaded_at: string;
-}
+const SelectLocPage = () => {
+    const lights = [
+        { id: 1, src: "/images/light1.jpg", appliedSrc: "/images/interior1.png" },
+        { id: 2, src: "/images/light2.png", appliedSrc: "/images/interior2.png" },
+    ];
 
-const NewPage = () => {
-    const [latestImage, setLatestImage] = useState<Image | null>(null);
-    const router = useRouter();
+    const [currentLightIndex, setCurrentLightIndex] = useState(0);
+    const currentLight = lights[currentLightIndex];
 
-    useEffect(() => {
-        const fetchLatestImage = async () => {
-            try {
-                const response = await fetch("/api/latest-image");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch latest image");
-                }
-                const result = await response.json();
-                setLatestImage(result.image);
-            } catch (error) {
-                console.error(error);
-            }
-        };
+    const handleNextLight = () => {
+        setCurrentLightIndex((prevIndex) => (prevIndex + 1) % lights.length);
+    };
 
-        fetchLatestImage();
-    }, []);
+    const handlePrevLight = () => {
+        setCurrentLightIndex((prevIndex) =>
+            prevIndex === 0 ? lights.length - 1 : prevIndex - 1
+        );
+    };
 
-    const handleViewRecommendation = () => {
-        // 임의 좌표 설정
-        const coordinates = { x: 185, y: 185 };
-
-        // 이미지 URL과 좌표를 쿼리 문자열로 생성
-        const query = new URLSearchParams({
-            imageUrl: latestImage?.s3_url || "",
-            x: coordinates.x.toString(),
-            y: coordinates.y.toString(),
-        }).toString();
-
-        // 문자열 형태로 이동
-        router.push(`/location?${query}`);
+    const handleApplyBright = () => {
+        alert("조명이 적용되었습니다!");
     };
 
     return (
@@ -54,30 +34,47 @@ const NewPage = () => {
             </div>
 
             {/* Content */}
-            <div className="flex flex-grow justify-center items-center mt-10">
-                {latestImage ? (
-                    <div className="mb-20 bg-white rounded-lg shadow-md p-6 text-center w-[320px]">
-                        <img
-                            src={latestImage.s3_url}
-                            alt={latestImage.image_name}
-                            className="w-full h-[300px] object-cover rounded-md"
-                        />
-                        <p className="mt-3 text-gray-800 font-custom">
-                            업로드된 이미지
+            <div className="flex flex-grow justify-center items-center mt-10 mb-20 space-x-10">
+                {/* 조명 이미지 박스 */}
+                <div className="bg-white rounded-lg shadow-md p-4 text-center w-[150px] h-[150px] relative">
+                    <button
+                        onClick={handlePrevLight}
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500 font-custom rounded-full w-8 h-8 flex justify-center items-center hover:bg-gray-400"
+                        aria-label="Previous Light"
+                    >
+                        &lt;
+                    </button>
+                    <img
+                        src={currentLight.src}
+                        alt="Light Image"
+                        className="w-full h-full object-contain rounded-md"
+                    />
+                    <button
+                        onClick={handleNextLight}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 font-custom rounded-full w-8 h-8 flex justify-center items-center hover:bg-gray-400"
+                        aria-label="Next Light"
+                    >
+                        &gt;
+                    </button>
+                </div>
+
+                {/* 메인 이미지 박스 */}
+                <div className="bg-white rounded-lg shadow-md p-5 text-center w-[320px] relative">
+                    <img
+                        src={currentLight.appliedSrc}
+                        alt="Applied Interior"
+                        className="w-full h-[300px] object-cover rounded-md"
+                    />
+                    {/* Apply Bright 버튼 */}
+                    <button
+                        onClick={handleApplyBright}
+                        className="group mt-4 bg-gray-700 px-5 py-2 rounded-lg hover:bg-[#ECD77F]"
+                    >
+                        <p className="text-white font-second group-hover:text-black">
+                            Apply Bright
                         </p>
-                        {/* 추천 위치 보기 버튼 */}
-                        <button
-                            onClick={handleViewRecommendation}
-                            className="group mt-5 bg-gray-700 px-5 py-2 rounded-lg hover:bg-[#ECD77F]"
-                        >
-                            <p className="text-white font-second group-hover:text-black">
-                                추천 위치 보기
-                            </p>
-                        </button>
-                    </div>
-                ) : (
-                    <p className="text-white">이미지가 없습니다. 업로드를 시도해주세요.</p>
-                )}
+                    </button>
+                </div>
             </div>
 
             {/* Footer */}
@@ -86,4 +83,4 @@ const NewPage = () => {
     );
 };
 
-export default NewPage;
+export default SelectLocPage;
