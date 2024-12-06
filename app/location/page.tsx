@@ -42,8 +42,8 @@ const LocationPage = () => {
                             style={{
                                 top: y,
                                 left: x,
-                                width: "30px",
-                                height: "30px",
+                                width: "35px",
+                                height: "35px",
                             }}
                             onClick={handleIconClick} // 아이콘 클릭 핸들러
                         />

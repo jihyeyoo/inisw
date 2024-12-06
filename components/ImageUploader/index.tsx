@@ -80,7 +80,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-100 rounded-lg p-5 cursor-pointer ${isDragging ? "border-2 border-dashed border-black" : "border-2 border-dashed border-gray-400"
+        className={`w-[400px] h-[150px] flex justify-center items-center bg-gray-200 rounded-lg p-5 cursor-pointer ${isDragging ? "border-2 border-black" : "border-2 border-gray-400"
           }`}
       >
         <input

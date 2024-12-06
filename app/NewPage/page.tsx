@@ -33,7 +33,7 @@ const NewPage = () => {
 
     const handleViewRecommendation = () => {
         // 임의 좌표 설정
-        const coordinates = { x: 185, y: 185 };
+        const coordinates = { x: 210, y: 145 };
 
         // 이미지 URL과 좌표를 쿼리 문자열로 생성
         const query = new URLSearchParams({
