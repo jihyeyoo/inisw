@@ -32,8 +32,18 @@ const NewPage = () => {
     }, []);
 
     const handleViewRecommendation = () => {
-        // Navigate to the recommendation page
-        router.push("/recommendation");
+        // 임의 좌표 설정
+        const coordinates = { x: 185, y: 185 };
+
+        // 이미지 URL과 좌표를 쿼리 문자열로 생성
+        const query = new URLSearchParams({
+            imageUrl: latestImage?.s3_url || "",
+            x: coordinates.x.toString(),
+            y: coordinates.y.toString(),
+        }).toString();
+
+        // 문자열 형태로 이동
+        router.push(`/location?${query}`);
     };
 
     return (
@@ -42,6 +52,7 @@ const NewPage = () => {
             <div className="flex justify-center">
                 <Navbar backgroundColor="rgb(0, 0, 0)" />
             </div>
+
             {/* Content */}
             <div className="flex flex-grow justify-center items-center mt-10">
                 {latestImage ? (
@@ -57,11 +68,11 @@ const NewPage = () => {
                         {/* 추천 위치 보기 버튼 */}
                         <button
                             onClick={handleViewRecommendation}
-                            className="mt-5 bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-[#ECD77F]"
+                            className="group mt-5 bg-gray-700 px-5 py-2 rounded-lg hover:bg-[#ECD77F]"
                         >
-                            <p className="text-white font-second hover:text-black">
-                            추천 위치 보기
-                        </p>
+                            <p className="text-white font-second group-hover:text-black">
+                                추천 위치 보기
+                            </p>
                         </button>
                     </div>
                 ) : (
