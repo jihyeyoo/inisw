@@ -75,7 +75,7 @@
 <br/>
 
 
-## **Flow Chart**
+## :arrow_right: **Flow Chart**
 
 ### **1. 배치 추천**
 
