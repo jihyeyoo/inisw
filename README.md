@@ -67,8 +67,8 @@
 
 ## :arrow_forward: **Colab QuickStart**
 
-[[예시데이터 생성](https://colab.research.google.com/drive/1gdmoDPuyOJKogsPuvj9BmficmRiDbomB)]
-[[배치 추천](https://colab.research.google.com/drive/1U4E21tIwgUvybyZYvlB4m4CnWCxLP0ex)]
+[[예시데이터 생성](https://colab.research.google.com/drive/1gdmoDPuyOJKogsPuvj9BmficmRiDbomB)] <br>
+[[배치 추천](https://colab.research.google.com/drive/1U4E21tIwgUvybyZYvlB4m4CnWCxLP0ex)] <br>
 [[조명 적용](https://gudong0918.tistory.com/104?category=1198432)]
 
 <br/>
