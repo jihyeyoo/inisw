@@ -10,7 +10,7 @@
 
 ## :link: Resource
 
-📄[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
+[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
 
 
 ## :computer: Tech Stacks
@@ -43,7 +43,7 @@
 이 시스템은 사용자 입력을 최소화하면서도, 최적화된 배치와 효과 적용 결과를 제공합니다. 이는 사용자의 의사결정을 단순화하고, 결과를 사전에 검토할 수 있는 기회를 제공합니다.
 <br/>
 <br/>
-## **Key Features**
+## :key: **Key Features**
 
 
 
@@ -85,7 +85,7 @@
 <br/>
 <br/>
 
-## **Service Flow**
+## :arrow_right_hook: **Service Flow**
 
 
 
