@@ -7,11 +7,11 @@
 |---|---|---|
 | __이정현__ | __하동우__ | __홍규린__ |
 
-## Resource
+## :link: Resource
 
 📄[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
 
-## Tech Stacks
+## :computer: Tech Stacks
 
 <div > 
   <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
