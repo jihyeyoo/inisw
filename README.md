@@ -7,9 +7,11 @@
 |---|---|---|
 | __이정현__ | __하동우__ | __홍규린__ |
 
+
 ## :link: Resource
 
 📄[Notion](https://www.notion.so/fenetre/2-94058050e52b422c88456d5acff4bea4)
+
 
 ## :computer: Tech Stacks
 
@@ -26,7 +28,6 @@
 	
 </div>
 
-## File Structure
 
 ## **Introduction**
 
