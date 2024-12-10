@@ -13,6 +13,7 @@
 
 ## Tech Stacks
 
+[![My Skills](https://skillicons.dev/icons?i=react,html,css,wasm)](https://skillicons.dev)
 
 <div align="center">
 	<img src="https://img.shields.io/badge/HTML-E34F26?style=flat" height=40px/>
