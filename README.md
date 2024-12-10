@@ -65,7 +65,7 @@
 <br/>
 <br/>
 
-## **Colab QuickStart**
+## :arrow_forward: **Colab QuickStart**
 
 [[예시데이터 생성](https://colab.research.google.com/drive/1gdmoDPuyOJKogsPuvj9BmficmRiDbomB)]
 [[배치 추천](https://colab.research.google.com/drive/1U4E21tIwgUvybyZYvlB4m4CnWCxLP0ex)]
