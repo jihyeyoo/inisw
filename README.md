@@ -116,7 +116,7 @@
 <br/>
 
 
-## **Approach**
+## :mag_right: **Approach**
 
 
 
@@ -189,7 +189,7 @@
 
 
 
-## **Expected Outcomes**
+## :bulb: **Expected Outcomes**
 
 
 
@@ -205,7 +205,7 @@
 <br/>
 <br/>
 
-## **Future Improvement**
+## :thought_balloon: **Future Improvement**
 
 ### 1. 조명 배치 추천의 고도화
 - **사용자 선호 데이터 기반 학습**  
