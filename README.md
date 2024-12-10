@@ -56,6 +56,15 @@
 <br/>
 <br/>
 
+## **Flow Chart**
+
+### **1. 배치 추천**
+
+![ㅇㅇㅇㅇㅇ (4)](https://github.com/user-attachments/assets/901a5197-6a71-44ba-b7e2-68e6eb1fc94b)
+
+<br/>
+<br/>
+
 ## **Service Flow**
 
 
@@ -78,12 +87,6 @@
 <br/>
 <br/>
 
-## **Flow Chart**
-
-![ㅇㅇㅇㅇㅇ (4)](https://github.com/user-attachments/assets/901a5197-6a71-44ba-b7e2-68e6eb1fc94b)
-
-<br/>
-<br/>
 
 ## **Approach**
 
@@ -159,19 +162,7 @@
 <br/>
 <br/>
 
-## **Why Combine These Approaches?**
 
-
-
-1. **Diffusion Model**:
-   - 조명 효과를 포함한 정교한 합성 결과를 생성합니다.
-   - 사용자가 배치한 조명의 물리적 특성을 재현하여 설득력 있는 결과를 제공합니다.
-2. **SVM Boundary Manipulation**:
-   - Latent Space에서 조명 배치에 대한 사용자 선호를 반영합니다.
-   - 반복적인 학습을 통해 점진적으로 추천 배치를 개선합니다.
-  
-<br/>
-<br/>
 
 
 ## **Expected Outcomes**
