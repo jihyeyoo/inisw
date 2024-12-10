@@ -70,7 +70,11 @@
 
 ### **1. 배치 추천**
 
-![ㅇㅇㅇㅇㅇ (4)](https://github.com/user-attachments/assets/901a5197-6a71-44ba-b7e2-68e6eb1fc94b)
+![ㅇㅇㅇㅇㅇ (5)](https://github.com/user-attachments/assets/0a1625ec-5da9-4743-9389-cd1aca04c8be)
+
+### **2. 조명 적용**
+
+![ㅇㅇㅇㅇㅇ (6)](https://github.com/user-attachments/assets/d5ca457f-5a8b-4c25-939a-68fc06eae17f)
 
 <br/>
 <br/>
