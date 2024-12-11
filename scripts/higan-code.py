@@ -540,7 +540,7 @@ if aggregate_grad_cam is not None:
         })
         print(f"cluster_{i + 1} Center Coordinates: (y: {cluster_center[0]:.2f}, x: {cluster_center[1]:.2f})")
 
-    # 타원 추가
+        # 타원 추가
         ellipse = patches.Ellipse(
             cluster_center[::-1], width=major_axis, height=minor_axis, angle=angle,
             edgecolor='red', facecolor='none', linewidth=2
@@ -551,193 +551,139 @@ if aggregate_grad_cam is not None:
         axes[0].scatter(x, y, color='lime', edgecolors='black', linewidth=2, s=100)
         axes[0].text(x + 5, y, f"Recommend {i+1}", color='lime', fontsize=12, weight='bold')
 
-axes[0].axis('off')
 
-# Heatmap이 없는 결과 (원본 이미지)
-axes[1].imshow(generated_image_1)
-axes[1].set_title("Result without Heatmap")
+from pymongo.errors import ConnectionFailure, PyMongoError
+import boto3
+from boto3.exceptions import S3UploadFailedError
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError, ClientError
+import os
+from dotenv import load_dotenv
+from datetime import datetime, timezone
 
-# 상위 recommend의 타원과 상위 포인트 표시 (원본 이미지)
-for i, (cluster_id, _) in enumerate(sorted_clusters):
-    points, values = clusters[cluster_id]
-    top_point = points[np.argmax(values)]
-    y, x = top_point
-
-    # 타원 중심과 범위 계산
-    cluster_center = np.mean(points, axis=0)
-    covariance_matrix = np.cov(points, rowvar=False)
-    eigenvalues, eigenvectors = np.linalg.eigh(covariance_matrix)
-    major_axis = scaling_factor * 2 * np.sqrt(eigenvalues[1])  # 주축
-    minor_axis = scaling_factor * 2 * np.sqrt(eigenvalues[0])  # 부축
-    # 타원의 각도를 항상 수직으로 설정 (90도)
-    angle = 90.0
-
-    #################
-
-    # 마스크 생성
-    mask = np.zeros_like(aggregate_grad_cam_normalized, dtype=np.uint8)
-    y, x = np.meshgrid(range(mask.shape[0]), range(mask.shape[1]), indexing='ij')
-    ellipse_mask = (
-        ((x - cluster_center[1]) * np.cos(np.radians(angle)) +
-         (y - cluster_center[0]) * np.sin(np.radians(angle)))**2 / (major_axis / 2)**2 +
-        ((x - cluster_center[1]) * np.sin(np.radians(angle)) -
-         (y - cluster_center[0]) * np.cos(np.radians(angle)))**2 / (minor_axis / 2)**2
-    ) <= 1  # 타원 내부인지 확인
-
-    mask[ellipse_mask] = 255  # 타원 내부를 흰색으로 설정
-
-    # 마스크 저장
-    # 결과 저장할 디렉토리 설정
-    output_dir = 'masks'
-
-    # 디렉토리가 없으면 생성
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # 나머지 코드
-    for i, (cluster_id, _) in enumerate(sorted_clusters):
-        # 기타 코드
-        mask_filename = os.path.join(output_dir, f"ellipse_mask_cluster_{i + 1}.png")
-        cv2.imwrite(mask_filename, mask)
-
-    # 상대 경로를 사용하여 .env.local 파일의 경로를 지정
-    dotenv_path = os.path.join(os.path.dirname(__file__), '..\..', '.env.local')
-    load_dotenv(dotenv_path)
-
+# 환경 변수 로드
+try:
+    load_dotenv()
     aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-    aws_s3_bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
     aws_s3_region = os.getenv('AWS_S3_REGION')
+    bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
     mongo_uri = os.getenv("MONGODB_URI")
 
-    import boto3
+    if not all([aws_access_key_id, aws_secret_access_key, aws_s3_region, bucket_name, mongo_uri]):
+        raise ValueError("One or more environment variables are missing.")
+except Exception as e:
+    print(f"Error loading environment variables: {e}")
+    exit(1)
 
-    # boto3 S3 클라이언트 생성
+# AWS S3 클라이언트 생성
+try:
     s3 = boto3.client(
         's3',
         aws_access_key_id=aws_access_key_id,
         aws_secret_access_key=aws_secret_access_key,
         region_name=aws_s3_region
     )
+except NoCredentialsError:
+    print("Credentials not available for AWS S3.")
+    exit(1)
+except ClientError as e:
+    print(f"Failed to create S3 client: {e}")
+    exit(1)
 
-    # 업로드할 버킷 이름
-    bucket_name = aws_s3_bucket_name
+# MongoDB 클라이언트 생성
+try:
+    client = MongoClient(mongo_uri)
+    db = client["lumterior"]
+    collection = db["images"]
+except ConnectionFailure:
+    print("Failed to connect to MongoDB.")
+    exit(1)
 
-    # 'masks' 디렉토리에 있는 파일 업로드
-    output_dir = 'masks'
-    for filename in os.listdir(output_dir):
-        file_path = os.path.join(output_dir, filename)
-        # S3 버킷에 파일 업로드
-        s3.upload_file(file_path, bucket_name, f'masks/{filename}')
-        print(f'Uploaded {filename} to s3://{bucket_name}/lumterior/masks/{filename}')
+# 최신 문서 가져오기
+try:
+    document = collection.find_one(sort=[('uploaded_at', -1)])
+    if not document:
+        print("No recent document found in MongoDB.")
+        exit()
+except PyMongoError as e:
+    print(f"Failed to retrieve document from MongoDB: {e}")
+    exit(1)
 
-    import os
-    import boto3
-    from pymongo import MongoClient
-    from dotenv import load_dotenv
-    import numpy as np
-    from bson.objectid import ObjectId
-    import cv2
+output_dir = 'masks'
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
-    def upload_masks_and_update_document(aggregate_grad_cam_normalized, generator, latent_codes1, latent_codes2, sample_index, step_index, output_dir='masks'):
-        # 환경 설정
-        load_dotenv()
-        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-        aws_s3_region = os.getenv('AWS_S3_REGION')
-        bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
-        mongo_uri = os.getenv("MONGODB_URI")
+mask_images = []
+for i, (cluster_id, _) in enumerate(sorted_clusters):
+    try:
+        points, values = clusters[cluster_id]
+        top_point = points[np.argmax(values)]
+        y, x = top_point
 
-        # AWS S3 클라이언트 생성
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            region_name=aws_s3_region
+        # 타원 중심과 범위 계산
+        cluster_center = np.mean(points, axis=0)
+        covariance_matrix = np.cov(points, rowvar=False)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance_matrix)
+        major_axis = scaling_factor * 2 * np.sqrt(eigenvalues[1])  # 주축
+        minor_axis = scaling_factor * 2 * np.sqrt(eigenvalues[0])  # 부축
+        
+        # 타원의 각도를 항상 수직으로 설정 (90도)
+        angle = 90.0
+        cluster_centers.append({
+        "cluster_id": cluster_id,
+        "center_y": cluster_center[0],
+        "center_x": cluster_center[1]
+        })
+        print(f"cluster_{i + 1} Center Coordinates: (y: {cluster_center[0]:.2f}, x: {cluster_center[1]:.2f})")
+
+        # 마스크 생성
+        mask = np.zeros_like(aggregate_grad_cam_normalized, dtype=np.uint8)
+        y, x = np.meshgrid(range(mask.shape[0]), range(mask.shape[1]), indexing='ij')
+        ellipse_mask = (
+            ((x - cluster_center[1]) * np.cos(np.radians(angle)) +
+            (y - cluster_center[0]) * np.sin(np.radians(angle)))**2 / (major_axis / 2)**2 +
+            ((x - cluster_center[1]) * np.sin(np.radians(angle)) -
+            (y - cluster_center[0]) * np.cos(np.radians(angle)))**2 / (minor_axis / 2)**2
+        ) <= 1  # 타원 내부인지 확인        
+        
+        # 타원 내부를 흰색으로 설정
+        mask[ellipse_mask] = 255
+
+        # 파일 이름 지정
+        mask_filename = f"mask_cluster_{i + 1}.png"
+        mask_path = os.path.join(output_dir, mask_filename)
+
+        # 이미지 파일로 저장
+        cv2.imwrite(mask_path, mask)
+        
+        s3_key = f'masks/{mask_filename}'
+        s3.upload_file(mask_path, bucket_name, s3_key)
+        mask_url = f'https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}'
+        print(f"Uploaded {mask_filename} to {mask_url}")
+        
+        # round(float(cluset_center[0]),2), round(float(cluset_center[1]),2) 소수점 2자리까지 한다고하면 이걸로 교체
+        mask_images.append({
+            f"mask_img_{i + 1}": mask_url,
+            "cluster_center": {"y": float(cluster_center[0]), "x": float(cluster_center[1])},
+            "cluster_id": int(cluster_id) + 1
+        })
+    except cv2.error as e:
+        print(f"Failed to create mask image: {e}")
+    except S3UploadFailedError as e:
+        print(f"Failed to upload {mask_filename} to S3: {e}")
+
+if mask_images:
+    try:
+        result = collection.update_one(
+            {"_id": document["_id"]},
+            {"$set": {
+                "mask_images": mask_images,
+                "uploaded_at": datetime.now(timezone.utc)
+            }}
         )
-
-        # MongoDB 연결 및 이미지 문서 조회
-        client = MongoClient(mongo_uri)
-        db = client["lumterior"]
-        collection = db["images"]
-        document = collection.find_one(sort=[('uploaded_at', -1)])  # 가장 최근의 문서 찾기
-
-        if not document:
-            print("No recent document found.")
-            return
-
-        mask_images = document.get("mask_images", [])
-        image_name = document["image_name"]
-
-        # 클러스터 계산 및 클러스터 이미지 생성
-        clusters = cluster_heatmap_with_dbscan(aggregate_grad_cam_normalized, eps=5, min_samples=40, prob_threshold=0.5)
-        cluster_scores = {cluster_id: np.mean(cluster_values) for cluster_id, (_, cluster_values) in clusters.items()}
-        sorted_clusters = sorted(cluster_scores.items(), key=lambda x: x[1], reverse=True)[:3]
-
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        for i, (cluster_id, _) in sorted_clusters:
-            points, values = clusters[cluster_id]
-            cluster_center = np.mean(points, axis=0)
-            center_y, center_x = int(cluster_center[0]), int(cluster_center[1])
-            covariance_matrix = np.cov(points.T)
-            eigenvalues = np.linalg.eigh(covariance_matrix)[0]
-            major_axis = 2 * np.sqrt(eigenvalues[1])
-            minor_axis = 2 * np.sqrt(eigenvalues[0])
-
-            # 마스크 이미지 생성
-            mask = np.zeros((256, 256), dtype=np.uint8)
-            cv2.ellipse(mask, (center_x, center_y), (int(minor_axis/2), int(major_axis/2)), 0, 0, 360, 255, -1)
-            mask_filename = f"mask_cluster_{cluster_id}.png"
-            mask_path = os.path.join(output_dir, mask_filename)
-            cv2.imwrite(mask_path, mask)
-
-            # S3에 업로드
-            s3_key = f'masks/{mask_filename}'
-            s3.upload_file(mask_path, bucket_name, s3_key)
-            mask_url = f'https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}'
-
-            mask_images.append({
-                "mask_img": mask_url,
-                "cluster_center": {"x": center_x, "y": center_y}
-            })
-
-        # MongoDB 문서 업데이트
-        collection.update_one(
-            {"image_name": document["image_name"]},
-            {"$set": {"mask_images": mask_images}}
-        )
-
-        print(f"Document updated successfully with new mask images and cluster centers for image {image_name}.")
-
-    # Heatmap 결과 시각화
-    plt.figure(figsize=(10, 5))
-    plt.imshow(result_image_2)
-    plt.title(f"Heatmap Result (Top {max_recommend_to_display} Recommends)")
-    plt.axis('off')
-    plt.show()
-
-    # 마스크 시각화
-    plt.imshow(mask, cmap='gray')
-    plt.title(f"Cluster {i + 1} Ellipse Mask")
-    plt.axis('off')
-    plt.show()
-
-    #################
-
-    # 타원 추가
-    ellipse = patches.Ellipse(
-        cluster_center[::-1], width=major_axis, height=minor_axis, angle=angle,
-        edgecolor='blue', facecolor='none', linewidth=2
-    )
-    axes[1].add_patch(ellipse)
-
-    # 상위 recommend 포인트 표시
-    axes[1].scatter(x, y, color='orange', edgecolors='black', linewidth=2, s=100)
-    axes[1].text(x + 5, y, f"Recommend {i+1}", color='orange', fontsize=12, weight='bold')
-
-axes[1].axis('off')
-
-plt.tight_layout()
-plt.show()
+        if result.modified_count > 0:
+            print(f"MongoDB updated successfully with {len(mask_images)} mask images.")
+        else:
+            print("MongoDB update failed. No document was modified.")
+    except PyMongoError as e:
+        print(f"Failed to update MongoDB: {e}")
