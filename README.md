@@ -1,6 +1,7 @@
 # 고려대학교 지능정보 SW 아카데미 5기 2조
 ![header](https://capsule-render.vercel.app/api?type=waving&color=black&height=300&section=header&text=LumTerior&fontSize=90&fontColor=ECD77F&animation=fadeIn&fontAlignY=38&desc=조명이%20바뀌면%20가치도%20바뀝니다.&descAlignY=55&descAlign=70#gh-light-mode-only)
 
+![header](https://capsule-render.vercel.app/api?type=waving&color=7c5846&height=300&section=header&text=LumTerior&fontSize=90&fontColor=ECD77F&animation=fadeIn&fontAlignY=38&desc=조명이%20바뀌면%20가치도%20바뀝니다.&descAlignY=55&descAlign=70#gh-dark-mode-only)
 ## :busts_in_silhouette: Members
 
 | 안지홍 | 유지혜 | 이승재 |
