@@ -31,19 +31,38 @@ const NewPage = () => {
         fetchLatestImage();
     }, []);
 
-    const handleViewRecommendation = () => {
-        // 임의 좌표 설정
-        const coordinates = { x: 210, y: 145 };
+    const handleViewRecommendation = async () => {
+        try {
+            // Step 1: Flask 서버 호출
+            const flaskResponse = await fetch("http://localhost:8000/run-higan", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
 
-        // 이미지 URL과 좌표를 쿼리 문자열로 생성
-        const query = new URLSearchParams({
-            imageUrl: latestImage?.s3_url || "",
-            x: coordinates.x.toString(),
-            y: coordinates.y.toString(),
-        }).toString();
+            if (!flaskResponse.ok) {
+                const error = await flaskResponse.json();
+                console.error("Flask 서버 호출 실패:", error.error || "알 수 없는 오류");
+                alert("추천 위치 분석에 실패했습니다.");
+                return;
+            }
 
-        // 문자열 형태로 이동
-        router.push(`/location?${query}`);
+            const flaskData = await flaskResponse.json();
+            console.log("Flask 실행 결과:", flaskData);
+
+            // Step 2: 기존 좌표 및 쿼리 생성 로직
+            const coordinates = { x: 210, y: 145 }; // 임의 좌표
+            const query = new URLSearchParams({
+                imageUrl: latestImage?.s3_url || "",
+                x: coordinates.x.toString(),
+                y: coordinates.y.toString(),
+            }).toString();
+
+            // Step 3: 기존 URL 이동 로직
+            router.push(`/location?${query}`);
+        } catch (error) {
+            console.error("추천 위치 보기 처리 실패:", error);
+            alert("추천 위치 처리가 실패했습니다.");
+        }
     };
 
     return (
@@ -79,7 +98,7 @@ const NewPage = () => {
                     <p className="text-white">이미지가 없습니다. 업로드를 시도해주세요.</p>
                 )}
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };
