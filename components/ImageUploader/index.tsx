@@ -104,17 +104,6 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
           />
         </label>
       </div>
-
-      {/* 이미지 미리보기 */}
-      {/* {preview && (
-        <div className="absolute top-4 left-4 w-[100px] h-[100px]">
-          <img
-            src={preview}
-            alt="미리보기"
-            className="w-full h-full object-cover rounded-md"
-          />
-        </div>
-      )} */}
     </div>
   );
 };
