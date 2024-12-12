@@ -32,9 +32,8 @@
 <br>
 
 
-## Testing
+## :triangular_flag_on_post: Testing
 
-서버
 ```
 cd scripts
 
