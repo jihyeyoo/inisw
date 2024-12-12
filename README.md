@@ -186,10 +186,19 @@
 
 ### 5. Encoder
 ***
-#### **Why Diffusion Model?**
+#### **Why pSp Encoder?**
+- 사용자 이미지를 입력하기 위해서는 이미지를 StyleGAN의 generator가 요구하는 (1, 14, 512) 구조의 잠재 벡터로 변환해야합니다.
+- **pSp Encoder**: 입력 이미지를 StyleGAN의 잠재 공간(latent space)으로 매핑하여, 재구성하거나 편집할 수 있는 잠재 벡터를 생성합니다.
+- **Latent Space W+**: StyleGAN의 Latent Space(잠재 공간) 중 W+공간은 여러 층(layer)에서 독립적인 잠재 벡터를 사용할 수 있는 확장된 공간으로, 보다 세밀한 편집 작업을 가능하게 함. pSp Encoder는 이 공간으로 이미지를 매핑합니다.
+#### **How pSp Encoder is Used?**
+1. 입력 이미지 처리: ResNet-50 또는 ResNet-101 같은 딥러닝 백본 네트워크를 사용하여 입력 이미지를 처리하고 피처 맵(feature map)을 추출합니다.
 
-- 조명 효과를 포함한 정교한 합성 결과를 생성합니다.
-- 사용자가 배치한 조명의 물리적 특성을 재현하여 설득력 있는 결과를 제공합니다.
+2. Latent Space W+ 매핑: 추출된 피처 맵은 StyleGAN의 잠재 공간 W+에 매핑됩니다. 이 과정에서 인코더는 StyleGAN 생성기가 원본 이미지와 유사한 이미지를 재구성할 수 있도록 잠재 벡터를 생성합니다.
+
+3. StyleGAN generator와 연계: Generator에서 Encoder가 만든 latent codes를 사용해 이미지를 생성합니다.
+
+- 한계점: 현재 사용하는 StyleGAN 모델은 14-layer로 구성된 잠재 벡터만을 처리할 수 있기 때문에, pSp Encoder가 생성한 18개의 latent codes를 그대로 사용할 수 없습니다.
+- 개선점: pSp Encoder로 매핑한 latent code를 사용하는 대신, StyleGAN 모델의 요구사항에 맞춰 14개의 잠재 벡터를 직접 생성할 수 있는 새로운 Encoder 개발이 필요합니다.
 
 <br/>
 <br/>
