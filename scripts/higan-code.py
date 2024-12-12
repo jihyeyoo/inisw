@@ -664,7 +664,7 @@ for i, (cluster_id, _) in enumerate(sorted_clusters):
         # round(float(cluset_center[0]),2), round(float(cluset_center[1]),2) 소수점 2자리까지 한다고하면 이걸로 교체
         mask_images.append({
             f"mask_img_{i + 1}": mask_url,
-            "cluster_center": {"y": float(cluster_center[0]), "x": float(cluster_center[1])},
+            "cluster_center": {"y": round(float(cluster_center[0]), 2), "x": round(float(cluster_center[1]), 2)},
             "cluster_id": int(cluster_id) + 1
         })
     except cv2.error as e:
