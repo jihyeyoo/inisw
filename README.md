@@ -31,6 +31,21 @@
 
 <br>
 
+
+## Testing
+
+서버
+```
+cd scripts
+
+python higan-app.py
+```
+
+```
+npm run dev
+```
+<br>
+
 ## :round_pushpin: **Introduction**
 
 
