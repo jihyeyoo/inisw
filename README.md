@@ -104,7 +104,6 @@ npm run dev
 ## :arrow_right_hook: **Service Flow**
 
 
-
 1. **공간 이미지 업로드**
    - 사용자가 자신의 공간 사진을 시스템에 업로드합니다.
 
@@ -281,5 +280,10 @@ npm run dev
 - **추가적인 데이터셋 학습**  
   - 다양한 인테리어 플랫폼들을 통해 실내 공간 데이터셋을 추가로 학습시켜 다양한 공간 조건에서 더 정교한 배치 추천이 가능하도록 개선합니다.  
 - **SVM과 Diffusion Model의 통합 최적화**  
-  - SVM 기반 Boundary Manipulation의 효율성을 높이고, Diffusion Model과의 상호작용을 개선하여 더 정밀한 결과를 제공.  
+  - SVM 기반 Boundary Manipulation의 효율성을 높이고, Diffusion Model과의 상호작용을 개선하여 더 정밀한 결과를 제공.
+ 
+<br>
+## :calling: **Demo**
+![스크린샷 2024-12-12 182715](https://github.com/user-attachments/assets/66a7767e-d33e-4b9d-a0e8-8282c381eaa4)
+
 
