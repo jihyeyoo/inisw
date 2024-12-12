@@ -13,9 +13,9 @@ def file_exists(path):
 # Step 1: Call /process_image to generate images
 url_process_image = "http://127.0.0.1:8080/process_image"
 data_process_image = {
-    "image_path": "examples/image/10_138_9.png",
-    "mask_path": "examples/mask/10_138_9_m.png",
-    "reference_path": "examples/reference/last1.png",
+    "image_path": "examples/image/10_449_4.png",
+    "mask_path": "examples/mask/mask_cluster_1.png",
+    "reference_path": "examples/reference/lamp1.png",
     "output_dir": "api_test_results",
     "seed": 321,
     "scale": 20

@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import subprocess
 import os
 import cv2
 import numpy as np
-import torch
 import torch.nn.functional as F
 from skimage.metrics import structural_similarity as compare_ssim
 
-
 app = Flask(__name__)
+CORS(app)  # CORS 설정
 
 # Ensure the output directory exists
 OUTPUT_DIR = "api_test_results"
