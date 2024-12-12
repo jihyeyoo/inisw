@@ -199,6 +199,8 @@ npm run dev
 
 ### 5. Encoder
 ***
+https://github.com/soccz/HIGAN.git
+
 #### **Why pSp Encoder?**
 - 사용자 이미지를 입력하기 위해서는 이미지를 StyleGAN의 generator가 요구하는 (1, 14, 512) 구조의 잠재 벡터로 변환해야합니다.
 - **pSp Encoder**: 입력 이미지를 StyleGAN의 잠재 공간(latent space)으로 매핑하여, 재구성하거나 편집할 수 있는 잠재 벡터를 생성합니다.
