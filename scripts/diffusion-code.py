@@ -1,60 +1,21 @@
 import requests
 import os
-import pymongo
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure, PyMongoError
-from dotenv import load_dotenv
 
-# Load environment variables
-try:
-    # .env 파일의 절대 경로를 지정
-    dotenv_path = os.path.join(os.path.dirname(__file__), '..\\', '.env.local')
-    load_dotenv(dotenv_path)
-    aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
-    aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
-    aws_s3_region = os.getenv('AWS_S3_REGION')
-    bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
-    mongo_uri = os.getenv("MONGODB_URI")
+import sys
+print(f"Python executable: {sys.executable}")
+print(f"Python version: {sys.version}")
+print(f"Python path: {sys.path}")
 
-    if not all([aws_access_key_id, aws_secret_access_key, aws_s3_region, bucket_name, mongo_uri]):
-        raise ValueError("One or more environment variables are missing.")
-except Exception as e:
-    print(f"Error loading environment variables: {e}")
-    exit(1)
-
-# Connect to MongoDB
-try:
-    client = MongoClient(mongo_uri)
-    db = client["lumterior"]
-    images_collection = db["images"]
-except ConnectionFailure:
-    print("Failed to connect to MongoDB.")
-    exit(1)
-
-# Retrieve the most recent image document
-try:
-    document = images_collection.find_one(sort=[('uploaded_at', -1)])
-    if not document:
-        print("No recent document found in MongoDB.")
-        exit(1)
-except PyMongoError as e:
-    print(f"Failed to retrieve document from MongoDB: {e}")
-    exit(1)
-
-# Set paths using the most recent document
-image_path = document.get('s3_url')
-mask_path = document.get('mask_path')
-reference_path = f"https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/lumterior/lamp/lamp1.png"
-
-# Check if the retrieved paths exist in the file system (if needed)
+# Ensure files exist
 def file_exists(path):
     return os.path.exists(path)
 
+# Step 1: Call /process_image to generate images
 url_process_image = "http://127.0.0.1:8080/process_image"
 data_process_image = {
-    "image_path": image_path,
-    "mask_path": mask_path,
-    "reference_path": reference_path,
+    "image_path": "examples/image/10_138_9.png",
+    "mask_path": "examples/mask/10_138_9_m.png",
+    "reference_path": "examples/reference/last1.png",
     "output_dir": "api_test_results",
     "seed": 321,
     "scale": 20

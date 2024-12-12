@@ -41,14 +41,14 @@ const LocationPage = () => {
                 },
                 body: JSON.stringify({ clusterId })
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed to run diffusion model');
             }
-    
+
             const responseData = await response.json();
             console.log('Diffusion Model Response:', responseData);
-    
+
             // Diffusion 작업 완료 후 다음 경로로 이동
             router.push(`/selectloc?clusterId=${clusterId}`);
         } catch (err) {
@@ -57,7 +57,7 @@ const LocationPage = () => {
         } finally {
             setIsLoading(false); // 로딩 상태 종료
         }
-    };    
+    };
 
     if (isLoading) {
         return <div>로딩 중...</div>;
