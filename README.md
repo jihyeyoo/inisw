@@ -184,7 +184,7 @@
 
 <br/>
 
-### **5. Encoder **
+### 5. Encoder
 ***
 #### **Why Diffusion Model?**
 
