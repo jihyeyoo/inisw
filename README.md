@@ -282,8 +282,10 @@ npm run dev
 - **SVM과 Diffusion Model의 통합 최적화**  
   - SVM 기반 Boundary Manipulation의 효율성을 높이고, Diffusion Model과의 상호작용을 개선하여 더 정밀한 결과를 제공.
  
-<br>
+<br/>
+
 ## :calling: **Demo**
+
 ![스크린샷 2024-12-12 182715](https://github.com/user-attachments/assets/66a7767e-d33e-4b9d-a0e8-8282c381eaa4)
 
 
