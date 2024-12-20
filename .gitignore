@@ -39,6 +39,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# models folder
+#model-folder
 higan
 diffusion

@@ -31,25 +31,32 @@ const LocationPage = () => {
     }, []);
 
     const handleIconClick = async (clusterId: number) => {
-        setIsLoading(true); // 로딩 상태 표시
+        setIsLoading(true);
         try {
-            // Diffusion 모델 실행
-            const response = await fetch(`http://localhost:8080/process_image`, {
+            const response = await fetch('http://localhost:8080/process_image', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ clusterId })
+                body: JSON.stringify({
+                    clusterId,
+                    image_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/image/10_449_4.png',
+                    mask_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/mask/mask_cluster_1.png',
+                    reference_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/reference/lamp1.png',
+                    output_dir: 'api_test_results',
+                    seed: 321,
+                    scale: 20,
+                }),
             });
-
+    
             if (!response.ok) {
                 throw new Error('Failed to run diffusion model');
             }
-
+    
             const responseData = await response.json();
             console.log('Diffusion Model Response:', responseData);
-
-            // Diffusion 작업이 완료되면 페이지 경로 변경
+    
+            // 성공하면 다음 페이지로 이동
             router.push(`/selectloc?clusterId=${clusterId}`);
         } catch (err) {
             console.error('Error running diffusion model:', err);

@@ -13,8 +13,8 @@ const ApplyBrightPage = () => {
   const router = useRouter(); // Next.js 라우터
 
   // 이미지 경로
-  const imagePath = "/images/interior1.png"; // 조명 적용된 인테리어 이미지
-  const maskPath = "/images/mask.png"; // 주어진 마스크 이미지
+  const imagePath = "scripts/api_test_results/results/10_449_4_321.png"; // 조명 적용된 인테리어 이미지
+  const maskPath = "scripts/api_test_results/common_mask.png"; // 주어진 마스크 이미지
 
   useEffect(() => {
     const loadAndProcessImage = async () => {
