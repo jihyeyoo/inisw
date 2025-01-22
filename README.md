@@ -202,7 +202,7 @@ npm run dev
 
 ### 5. Encoder
 ***
-https://github.com/soccz/HIGAN.git
+• github 주소 : https://github.com/soccz/HIGAN.git
 
 #### **Why pSp Encoder?**
 - 사용자 이미지를 입력하기 위해서는 이미지를 StyleGAN의 generator가 요구하는 (1, 14, 512) 구조의 잠재 벡터로 변환해야합니다.
