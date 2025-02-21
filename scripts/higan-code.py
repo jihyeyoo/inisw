@@ -115,7 +115,7 @@ import certifi
 # MongoDB 연결 및 이미지 정보 가져오기
 def connect_to_mongodb():
     # 상대 경로를 사용하여 .env.local 파일의 경로를 지정
-    dotenv_path = os.path.join(os.path.dirname(__file__), '..\..', '.env.local')
+    dotenv_path = os.path.join(os.path.dirname(__file__), r'..\..', '.env.local')
     load_dotenv(dotenv_path)
     print(dotenv_path)
     try:
