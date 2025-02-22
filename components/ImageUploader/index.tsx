@@ -37,7 +37,7 @@ const ImageUploader = ({ onImageUpload }: ImageUploaderProps) => {
         }
         
         // NewPage로 이동 (컴포넌트라서 라우터 사용 불가능해서 이런 식으로 구성)
-        window.location.href = "/newpage";
+        window.location.href = "/NewPage";
       } else {
         alert(result.error || '업로드 중 오류가 발생했습니다.');
       }

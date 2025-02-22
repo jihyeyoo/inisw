@@ -115,7 +115,7 @@ import certifi
 # MongoDB 연결 및 이미지 정보 가져오기
 def connect_to_mongodb():
     # 상대 경로를 사용하여 .env.local 파일의 경로를 지정
-    dotenv_path = os.path.join(os.path.dirname(__file__), '..\..', '.env.local')
+    dotenv_path = os.path.join(os.path.dirname(__file__), r'..\..', '.env.local')
     load_dotenv(dotenv_path)
     print(dotenv_path)
     try:
@@ -605,6 +605,7 @@ try:
     if not document:
         print("No recent document found in MongoDB.")
         exit()
+    image_name = document['image_name'] # DB에서 image_name 추출
 except PyMongoError as e:
     print(f"Failed to retrieve document from MongoDB: {e}")
     exit(1)
@@ -656,7 +657,7 @@ for i, (cluster_id, _) in enumerate(sorted_clusters):
         # 이미지 파일로 저장
         cv2.imwrite(mask_path, mask)
         
-        s3_key = f'masks/{mask_filename}'
+        s3_key = f'{image_name}-masks/{mask_filename}'
         s3.upload_file(mask_path, bucket_name, s3_key)
         mask_url = f'https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}'
         print(f"Uploaded {mask_filename} to {mask_url}")
