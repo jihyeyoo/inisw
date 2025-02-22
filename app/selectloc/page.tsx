@@ -6,9 +6,9 @@ import Footer from "@/components/Footer";
 
 const SelectLocPage = () => {
     const lights = [
-        { id: 1, src: "/images/lamp1.jpg", appliedSrc: "scripts/api_test_results/results/10_449_4_321.png" },
-        // { id: 2, src: "/images/light1.jpg", appliedSrc: "/images/interior1.png" },
-        // { id: 3, src: "/images/light2.png", appliedSrc: "/images/interior2.png" },
+        { id: 1, src: "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp1.png", appliedSrc: "scripts/api_test_results/results/10_449_4(1).png" },
+        { id: 2, src: "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png", appliedSrc: "scripts/api_test_results/results/10_449_4(2).png" },
+        { id: 3, src: "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png", appliedSrc: "scripts/api_test_results/results/10_449_4(3).png" },
     ];
 
     const [currentLightIndex, setCurrentLightIndex] = useState(0);

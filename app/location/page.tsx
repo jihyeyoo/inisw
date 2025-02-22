@@ -1,3 +1,4 @@
+// /app/location/page.tsx
 "use client";
 import { useState, useEffect } from 'react';
 import Footer from "@/components/Footer";
@@ -7,6 +8,7 @@ import { useRouter } from "next/navigation";
 const LocationPage = () => {
     const router = useRouter();
     const [images, setImages] = useState<any[]>([]);
+    const [latestImage, setLatestImage] = useState<any | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -19,10 +21,17 @@ const LocationPage = () => {
                 }
                 const data = await response.json();
                 setImages(data.images);
+
+                const latestImageResponse = await fetch('/api/latest-image');
+                if (!latestImageResponse.ok) {
+                    throw new Error('Failed to fetch latest image');
+                }
+                const latestImageData = await latestImageResponse.json();
+                setLatestImage(latestImageData.image);
                 setIsLoading(false);
             } catch (err) {
                 console.error(err);
-                setError(err instanceof Error ? err.message : 'An unknown error occurred');
+                setError(err instanceof Error ? err.message : 'Unknown error occurred');
                 setIsLoading(false);
             }
         };
@@ -30,48 +39,106 @@ const LocationPage = () => {
         fetchImageData();
     }, []);
 
+    const processDiffusionImage = async (
+        imageUrl: string, 
+        maskUrl: string, 
+        referenceUrl: string, 
+        outputDir: string
+    ) => {
+        const response = await fetch('http://localhost:8080/process_image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                image_path: imageUrl,
+                mask_path: maskUrl,
+                reference_path: referenceUrl,
+                output_dir: outputDir,
+                seed: 321,
+                scale: 20,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to process image with ${referenceUrl}`);
+        }
+
+        return await response.json();
+    };
+
     const handleIconClick = async (clusterId: number) => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:8080/process_image', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    clusterId,
-                    image_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/image/10_449_4.png',
-                    mask_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/mask/mask_cluster_1.png',
-                    reference_path: 'C:/Users/matte/OneDrive/바탕 화면/inisw/scripts/examples/reference/lamp1.png',
-                    output_dir: 'api_test_results',
-                    seed: 321,
-                    scale: 20,
-                }),
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to run diffusion model');
+            if (!latestImage) {
+                throw new Error('No latest image data available');
             }
-    
-            const responseData = await response.json();
-            console.log('Diffusion Model Response:', responseData);
-    
-            // 성공하면 다음 페이지로 이동
+
+            const bucketName = process.env.NEXT_PUBLIC_AWS_S3_BUCKET_NAME;
+            const region = process.env.NEXT_PUBLIC_AWS_S3_REGION;
+
+            if (!bucketName || !region) {
+                throw new Error('Missing AWS environment variables');
+            }
+
+            const maskImageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${latestImage.image_name}-masks/mask_cluster_${clusterId}.png`;
+            
+            // Process images with different lamps in parallel
+            const lampUrls = [
+                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp1.png",
+                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png",
+                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png"
+            ];
+
+            const processPromises = lampUrls.map((lampUrl, index) => 
+                processDiffusionImage(
+                    latestImage.s3_url,
+                    maskImageUrl,
+                    lampUrl,
+                    `lamp${index + 1}_results`
+                )
+            );
+
+            const results = await Promise.all(processPromises);
+
+            // Generate masks for each processed image
+            const maskPromises = results.map(result => 
+                fetch('http://localhost:8080/generate_mask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        processed_image_path: result.processed_image_path,
+                        original_image_path: latestImage.s3_url
+                    }),
+                })
+            );
+
+            await Promise.all(maskPromises);
+
+            // Store results in local storage or context for the next page
+            localStorage.setItem('processedImages', JSON.stringify(results));
             router.push(`/selectloc?clusterId=${clusterId}`);
+
         } catch (err) {
-            console.error('Error running diffusion model:', err);
-            setError(err instanceof Error ? err.message : 'An unknown error occurred');
+            console.error('Diffusion model execution error:', err);
+            setError(err instanceof Error ? err.message : 'Unknown error occurred');
         } finally {
             setIsLoading(false);
         }
     };
 
     if (isLoading) {
-        return <div>로딩 중...</div>;
+        return <div className="flex justify-center items-center min-h-screen">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        </div>;
     }
 
     if (error) {
-        return <div>오류: {error}</div>;
+        return <div className="flex justify-center items-center min-h-screen text-red-600">
+            Error: {error}
+        </div>;
     }
 
     return (
@@ -93,8 +160,8 @@ const LocationPage = () => {
                                 <img
                                     key={maskImage.cluster_id}
                                     src="/images/loc.png"
-                                    alt={`Location Icon ${maskImage.cluster_id}`}
-                                    className="absolute cursor-pointer"
+                                    alt={`cluster_id ${maskImage.cluster_id}`}
+                                    className="absolute cursor-pointer hover:scale-110 transition-transform"
                                     style={{
                                         top: `${maskImage.cluster_center.y}px`,
                                         left: `${maskImage.cluster_center.x}px`,
