@@ -37,14 +37,6 @@ def read_image_from_url(url, grayscale=False):
 def resize_image(image, target_height=512, target_width=512):
     return cv2.resize(image, (target_width, target_height))
 
-# Route to check if the API is running
-@app.route("/", methods=["GET"])
-def home():
-    """
-    Basic route to verify that the API is running.
-    """
-    return jsonify({"message": "API is running"}), 200
-
 @app.route("/process_image", methods=["POST"])
 def process_image():
     try:
