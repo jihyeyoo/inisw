@@ -39,6 +39,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#model-folder
+# model-folder
 higan
-diffusion
+Diffusion
+
+# results
+api_test_results
+lamp1_results
+lamp2_results
+lamp3_results
