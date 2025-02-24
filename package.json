@@ -12,6 +12,7 @@
     "@aws-sdk/client-s3": "^3.705.0",
     "@aws-sdk/s3-request-presigner": "^3.705.0",
     "aws-sdk": "^2.1692.0",
+    "boto3": "^0.0.1",
     "mongodb": "^6.11.0",
     "mongoose": "^8.8.3",
     "multer": "^1.4.5-lts.1",

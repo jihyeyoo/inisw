@@ -1,4 +1,3 @@
-# /scripts/diffusion-app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import subprocess
@@ -10,9 +9,33 @@ from skimage.metrics import structural_similarity as compare_ssim
 import requests
 from urllib.parse import urlparse
 import numpy as np
+import boto3
+from botocore.exceptions import NoCredentialsError, ClientError
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
+
+# 상대 경로를 사용하여 .env.local 파일 경로 설정
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env.local'))
+aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+aws_s3_region = os.getenv('AWS_S3_REGION')
+bucket_name = os.getenv('AWS_S3_BUCKET_NAME')
+
+# 환경 변수 로드 확인
+print(f"AWS S3 Region: {aws_s3_region}")
+print(f"Bucket Name: {bucket_name}")
+print(f"AWS Access Key ID 존재: {'있음' if aws_access_key_id else '없음'}")
+print(f"AWS Secret Access Key 존재: {'있음' if aws_secret_access_key else '없음'}")
+
+# S3 클라이언트 초기화
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=aws_access_key_id,
+    aws_secret_access_key=aws_secret_access_key,
+    region_name=aws_s3_region
+)
 
 def get_output_dir_from_image(reference_url, base_dir="."):
     """입력 이미지 파일명(lampX.png)에 맞는 lampX_results 폴더를 찾는 함수"""
@@ -26,6 +49,82 @@ def get_output_dir_from_image(reference_url, base_dir="."):
         return output_dir
     else:
         raise Exception(f"Output directory not found: {output_dir}")
+
+def get_s3_key_prefix(reference_url):
+    """S3에 업로드할 때 사용할 키 프리픽스 생성 함수"""
+    # URL에서 파일명 추출 (예: 10_449_4.png)
+    file_name = os.path.basename(urlparse(reference_url).path)
+    
+    # S3 키 프리픽스 생성 (예: 10_449_4.png-diffusion-results/)
+    return f"{file_name}-diffusion-results/"
+
+def upload_file_to_s3(local_path, s3_key, content_type="image/png"):
+    """로컬 파일을 S3에 업로드하는 함수"""
+    try:
+        s3_client.upload_file(
+            local_path, 
+            bucket_name, 
+            s3_key,
+            ExtraArgs={'ContentType': content_type}
+        )
+        return f"https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}"
+    except NoCredentialsError:
+        raise Exception("AWS 자격 증명이 없거나 잘못되었습니다.")
+    except ClientError as e:
+        raise Exception(f"S3 업로드 중 오류 발생: {str(e)}")
+    except Exception as e:
+        raise Exception(f"파일 업로드 실패: {str(e)}")
+
+def upload_directory_to_s3(local_dir, s3_prefix):
+    """디렉토리 전체를 S3에 업로드하는 함수"""
+    s3_urls = {}
+    
+    try:
+        for root, dirs, files in os.walk(local_dir):
+            for file in files:
+                local_path = os.path.join(root, file)
+                
+                # 로컬 경로에서 상대 경로 추출
+                relative_path = os.path.relpath(local_path, start=local_dir)
+                
+                # 상대 경로가 None이나 빈 문자열이 아닌지 확인
+                if not relative_path:
+                    print(f"Warning: Empty relative path for {local_path}")
+                    continue
+                
+                # 윈도우 경로 구분자를 URL 경로 구분자로 변환
+                relative_path_fixed = relative_path.replace('\\', '/')
+                
+                # S3 키 생성
+                s3_key = f"{s3_prefix}{relative_path_fixed}"
+                
+                # 파일이 실제로 존재하는지 확인
+                if not os.path.exists(local_path):
+                    print(f"Warning: File does not exist: {local_path}")
+                    continue
+                
+                # 콘텐츠 타입 결정
+                content_type = "image/png" if file.endswith(".png") else "application/octet-stream"
+                
+                # S3에 업로드
+                try:
+                    s3_client.upload_file(
+                        local_path, 
+                        bucket_name, 
+                        s3_key,
+                        ExtraArgs={'ContentType': content_type}
+                    )
+                    s3_url = f"https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_key}"
+                    s3_urls[relative_path_fixed] = s3_url
+                    print(f"파일 업로드 완료: {local_path} -> {s3_url}")
+                except Exception as e:
+                    print(f"개별 파일 업로드 실패: {local_path} -> {str(e)}")
+                    continue
+                
+        return s3_urls
+    except Exception as e:
+        print(f"디렉토리 업로드 세부 오류: {str(e)}")
+        raise Exception(f"디렉토리 업로드 실패: {str(e)}")
 
 def read_image_from_url(url, grayscale=False):
     """Directly read image from URL without saving"""
@@ -70,9 +169,7 @@ def process_image():
         output_dir = get_output_dir_from_image(reference_url)
 
         # Debugging logs
-        print(
-            f"Processing image: {image_url}, mask: {mask_url}, reference: {reference_url}"
-        )
+        print(f"Processing image: {image_url}, mask: {mask_url}, reference: {reference_url}")
 
         if not all([image_url, mask_url, reference_url]):
             return jsonify({"error": "Missing required URLs"}), 400
@@ -146,27 +243,42 @@ def process_image():
             for temp_path in temp_paths.values():
                 if os.path.exists(temp_path):
                     os.remove(temp_path)
+                    
+            # S3에 결과 업로드
+            s3_prefix = get_s3_key_prefix(reference_url)
+            
+            # output_dir만 S3에 업로드
+            print(f"S3 업로드 시작: {output_dir} -> {s3_prefix}")
+            s3_urls = upload_directory_to_s3(output_dir, s3_prefix)
 
-            return (
-                jsonify(
-                    {
-                        "message": "Image processed successfully",
-                        "processed_image_path": processed_file_path,
-                        "original_image_path": image_url,
-                        "reference_path":reference_url,
-                        "output": result.stdout,
-                    }
-                ),
-                200,
-            )
-
+            # 결과 이미지의 S3 URL 계산
+            relative_path = os.path.relpath(processed_file_path, start=output_dir)
+            relative_path_fixed = relative_path.replace('\\', '/')
+            s3_processed_image_path = f"https://{bucket_name}.s3.{aws_s3_region}.amazonaws.com/{s3_prefix}{relative_path_fixed}"
+            
+            print(f"S3 업로드 완료. 결과 이미지: {s3_processed_image_path}")
         except Exception as e:
-            raise Exception(f"Processing failed: {str(e)}")
+            print(f"S3 업로드 중 오류 발생: {str(e)}")
+            return jsonify({"error": f"Image processing failed: {str(e)}"}), 500
+
+        return (
+            jsonify(
+                {
+                    "message": "Image processed successfully",
+                    "processed_image_path": processed_file_path,
+                    "s3_processed_image_path": s3_processed_image_path,
+                    "original_image_path": image_url,
+                    "reference_path": reference_url,
+                    "output": result.stdout,
+                    "s3_urls": s3_urls
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         print(f"Error occurred: {str(e)}")  # 오류 메시지 출력
         return jsonify({"error": str(e)}), 500
-
 
 @app.route("/generate_mask", methods=["POST"])
 def generate_mask():
@@ -237,10 +349,21 @@ def generate_mask():
         print(f"Saving mask to: {mask_path}")
 
         cv2.imwrite(mask_path, blurred_mask)
+        
+        # S3에 마스크 업로드 코드 수정
+        s3_prefix = get_s3_key_prefix(reference_url)
+        parent_dir = os.path.dirname(output_dir)
+        relative_path = os.path.relpath(mask_path, start=parent_dir)
+        relative_path_fixed = relative_path.replace('\\', '/')
+        s3_key = f"{s3_prefix}{relative_path_fixed}"
+
+        # S3에 업로드
+        s3_mask_url = upload_file_to_s3(mask_path, s3_key, "image/png")
 
         return jsonify({
             "message": "Common mask generated successfully",
-            "mask_path": mask_path
+            "mask_path": mask_path,
+            "s3_mask_url": s3_mask_url
         }), 200
 
     except Exception as e:
