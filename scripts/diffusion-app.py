@@ -50,13 +50,13 @@ def get_output_dir_from_image(reference_url, base_dir="."):
     else:
         raise Exception(f"Output directory not found: {output_dir}")
 
-def get_s3_key_prefix(reference_url):
+def get_s3_key_prefix(image_url):
     """S3에 업로드할 때 사용할 키 프리픽스 생성 함수"""
     # URL에서 파일명 추출 (예: 10_449_4.png)
-    file_name = os.path.basename(urlparse(reference_url).path)
+    file_name = os.path.basename(urlparse(image_url).path)
     
     # S3 키 프리픽스 생성 (예: 10_449_4.png-diffusion-results/)
-    return f"{file_name}-diffusion-results/"
+    return f"results/{file_name}-diffusion-results/"
 
 def upload_file_to_s3(local_path, s3_key, content_type="image/png"):
     """로컬 파일을 S3에 업로드하는 함수"""
@@ -143,10 +143,8 @@ def read_image_from_url(url, grayscale=False):
     except Exception as e:
         raise Exception(f"Failed to read image from {url}: {str(e)}")
 
-
 def resize_image(image, target_height=512, target_width=512):
     return cv2.resize(image, (target_width, target_height))
-
 
 @app.route("/process_image", methods=["POST"])
 def process_image():
@@ -245,7 +243,7 @@ def process_image():
                     os.remove(temp_path)
                     
             # S3에 결과 업로드
-            s3_prefix = get_s3_key_prefix(reference_url)
+            s3_prefix = get_s3_key_prefix(image_url)
             
             # output_dir만 S3에 업로드
             print(f"S3 업로드 시작: {output_dir} -> {s3_prefix}")
@@ -288,6 +286,7 @@ def generate_mask():
         processed_image_path = data.get("processed_image_path")  # 조명 합성된 후 이미지
         original_image_path = data.get("original_image_path")  # 조명 합성되기 전 이미지
         reference_url = data.get("reference_path")  # 참고 이미지 URL
+        image_url = data.get("original_image_path")  # 원본 이미지 URL
 
         # 디버깅 로그 추가
         print(f"Processed Image Path: {processed_image_path}")
@@ -351,7 +350,8 @@ def generate_mask():
         cv2.imwrite(mask_path, blurred_mask)
         
         # S3에 마스크 업로드 코드 수정
-        s3_prefix = get_s3_key_prefix(reference_url)
+        filename = image_url.split('-')[-1]  # 하이픈으로 분리한 후 마지막 부분을 추출
+        s3_prefix = get_s3_key_prefix(filename)
         parent_dir = os.path.dirname(output_dir)
         relative_path = os.path.relpath(mask_path, start=parent_dir)
         relative_path_fixed = relative_path.replace('\\', '/')
