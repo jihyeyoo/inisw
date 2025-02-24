@@ -40,9 +40,9 @@ const LocationPage = () => {
     }, []);
 
     const processDiffusionImage = async (
-        imageUrl: string, 
-        maskUrl: string, 
-        referenceUrl: string, 
+        imageUrl: string,
+        maskUrl: string,
+        referenceUrl: string,
         outputDir: string
     ) => {
         const response = await fetch('http://localhost:8080/process_image', {
@@ -82,15 +82,20 @@ const LocationPage = () => {
             }
 
             const maskImageUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${latestImage.image_name}-masks/mask_cluster_${clusterId}.png`;
-            
+
             // Process images with different lamps in parallel
             const lampUrls = [
                 "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp1.png",
-                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png",
-                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png"
+                // "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png",
+                // "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png"
             ];
 
-            const processPromises = lampUrls.map((lampUrl, index) => 
+            // URL 확인
+            lampUrls.forEach((lampUrl, index) => {
+                console.log(`Lamp URL ${index + 1}:`, lampUrl);
+            });
+
+            const processPromises = lampUrls.map((lampUrl, index) =>
                 processDiffusionImage(
                     latestImage.s3_url,
                     maskImageUrl,
@@ -100,9 +105,10 @@ const LocationPage = () => {
             );
 
             const results = await Promise.all(processPromises);
+            console.log('Response from processDiffusionImage:', results); // 응답 내용 출력
 
             // Generate masks for each processed image
-            const maskPromises = results.map(result => 
+            const maskPromises = results.map((result, index) =>
                 fetch('http://localhost:8080/generate_mask', {
                     method: 'POST',
                     headers: {
@@ -110,7 +116,8 @@ const LocationPage = () => {
                     },
                     body: JSON.stringify({
                         processed_image_path: result.processed_image_path,
-                        original_image_path: latestImage.s3_url
+                        original_image_path: latestImage.s3_url,
+                        reference_path: lampUrls[index]
                     }),
                 })
             );
@@ -123,6 +130,7 @@ const LocationPage = () => {
 
         } catch (err) {
             console.error('Diffusion model execution error:', err);
+            console.error('Error details:', err instanceof Error ? err.stack : 'No stack available');
             setError(err instanceof Error ? err.message : 'Unknown error occurred');
         } finally {
             setIsLoading(false);

@@ -41,10 +41,9 @@ next-env.d.ts
 
 # model-folder
 higan
-Diffusion
+diffusion
 
 # results
-api_test_results
 lamp1_results
 lamp2_results
 lamp3_results
