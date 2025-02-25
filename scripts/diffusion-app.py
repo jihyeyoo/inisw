@@ -50,13 +50,16 @@ def get_output_dir_from_image(reference_url, base_dir="."):
     else:
         raise Exception(f"Output directory not found: {output_dir}")
 
-def get_s3_key_prefix(image_url):
+def get_s3_key_prefix(image_url, reference_url): 
     """S3에 업로드할 때 사용할 키 프리픽스 생성 함수"""
     # URL에서 파일명 추출 (예: 10_449_4.png)
     file_name = os.path.basename(urlparse(image_url).path)
-    
-    # S3 키 프리픽스 생성 (예: 10_449_4.png-diffusion-results/)
-    return f"results/{file_name}-diffusion-results/"
+
+    # reference_url 기반으로 출력 디렉토리 이름 가져오기
+    refer_name = get_output_dir_from_image(reference_url)
+
+    # S3 키 프리픽스 생성 (예: lamp1/10_449_4.png-diffusion-results/)
+    return f"{refer_name}/{file_name}-diffusion-results/"
 
 def upload_file_to_s3(local_path, s3_key, content_type="image/png"):
     """로컬 파일을 S3에 업로드하는 함수"""
@@ -233,7 +236,7 @@ def process_image():
                 raise Exception(f"Diffusion model failed: {result.stderr}")
 
             processed_file_path = os.path.join(output_dir, "results", f"{base_name}_temp_{seed}.png")
-            # print(processed_file_path);
+            print(processed_file_path);
             if not os.path.exists(processed_file_path):
                 raise Exception("Processed file not found")
             
@@ -243,7 +246,8 @@ def process_image():
                     os.remove(temp_path)
                     
             # S3에 결과 업로드
-            s3_prefix = get_s3_key_prefix(image_url)
+            filename = image_url.split('-')[-1]  # 하이픈으로 분리한 후 마지막 부분을 추출
+            s3_prefix = get_s3_key_prefix(filename, reference_url)
             
             # output_dir만 S3에 업로드
             print(f"S3 업로드 시작: {output_dir} -> {s3_prefix}")
@@ -351,7 +355,7 @@ def generate_mask():
         
         # S3에 마스크 업로드 코드 수정
         filename = image_url.split('-')[-1]  # 하이픈으로 분리한 후 마지막 부분을 추출
-        s3_prefix = get_s3_key_prefix(filename)
+        s3_prefix = get_s3_key_prefix(filename, reference_url)
         parent_dir = os.path.dirname(output_dir)
         relative_path = os.path.relpath(mask_path, start=parent_dir)
         relative_path_fixed = relative_path.replace('\\', '/')
