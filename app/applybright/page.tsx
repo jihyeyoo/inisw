@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
@@ -8,13 +7,17 @@ import { useRouter } from "next/navigation";
 const ApplyBrightPage = () => {
   const [brightness, setBrightness] = useState(1.0); // 기본 밝기 값
   const [colorTemp, setColorTemp] = useState(0); // 기본 색온도 값
+  const [imagePath, setImagePath] = useState(""); // 이미지 경로 상태
+  const [maskPath, setMaskPath] = useState(""); // 마스크 경로 상태
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
   const router = useRouter(); // Next.js 라우터
 
-  // 이미지 경로
-  const imagePath = "scripts/api_test_results/results/10_449_4_321.png"; // 조명 적용된 인테리어 이미지
-  const maskPath = "scripts/api_test_results/common_mask.png"; // 주어진 마스크 이미지
+  useEffect(() => {
+    // 클라이언트 사이드에서만 실행
+    const { searchParams } = new URL(window.location.href);
+    setImagePath(searchParams.get("imagePath") || ""); // 조명 적용된 인테리어 이미지
+    setMaskPath(searchParams.get("maskPath") || ""); // 주어진 마스크 이미지
+  }, []); // 처음 렌더링될 때만 실행
 
   useEffect(() => {
     const loadAndProcessImage = async () => {
@@ -40,11 +43,12 @@ const ApplyBrightPage = () => {
     };
 
     loadAndProcessImage();
-  }, [brightness, colorTemp]);
+  }, [brightness, colorTemp, imagePath, maskPath]); // imagePath와 maskPath도 의존성 배열에 추가
 
   const loadImage = (src: string) => {
     return new Promise<HTMLImageElement>((resolve) => {
       const img = new Image();
+      img.crossOrigin = "Anonymous"; // CORS 설정 추가
       img.onload = () => resolve(img);
       img.src = src;
     });

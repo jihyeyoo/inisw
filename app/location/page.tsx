@@ -86,8 +86,8 @@ const LocationPage = () => {
             // Process images with different lamps in parallel
             const lampUrls = [
                 "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp1.png",
-                // "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png",
-                // "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png"
+                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp2.png",
+                "https://lumterior.s3.ap-northeast-2.amazonaws.com/lamp/lamp3.png"
             ];
 
             // URL 확인
